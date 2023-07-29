@@ -6,6 +6,8 @@ use serenity::prelude::*;
 use shuttle_secrets::SecretStore;
 use tracing::{error, info};
 
+mod maile;
+
 struct Bot;
 
 #[async_trait]
@@ -13,6 +15,11 @@ impl EventHandler for Bot {
     async fn message(&self, ctx: Context, msg: Message) {
         if msg.content == "!hello" {
             if let Err(e) = msg.channel_id.say(&ctx.http, "world!").await {
+                error!("Error sending message: {:?}", e);
+            }
+        }else if msg.content == "!mail" {
+            maile::send().await;
+            if let Err(e) = msg.channel_id.say(&ctx.http, "SENT!").await {
                 error!("Error sending message: {:?}", e);
             }
         }
